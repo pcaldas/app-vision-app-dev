@@ -11,6 +11,11 @@ import AVFoundation
 import CoreML
 import Vision
 
+enum FlashState {
+    case on
+    case off
+}
+
 class CameraVC: UIViewController {
     
     var captureSession: AVCaptureSession!
@@ -18,6 +23,10 @@ class CameraVC: UIViewController {
     var previewLayer: AVCaptureVideoPreviewLayer!
     
     var photoData: Data?
+    
+    var flashControlState: FlashState = .off
+    
+    var speechSynthesizer = AVSpeechSynthesizer()
 
     @IBOutlet weak var cameraView: UIView!
     @IBOutlet weak var captureImageView: RoundedShadowImageView!
@@ -25,19 +34,21 @@ class CameraVC: UIViewController {
     @IBOutlet weak var identificationLbl: UILabel!
     @IBOutlet weak var confidenceLbl: UILabel!
     @IBOutlet weak var roudedLblView: RoundedShadowView!
+    @IBOutlet weak var spinner: UIActivityIndicatorView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
     }
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         previewLayer.frame = cameraView.bounds
+        speechSynthesizer.delegate = self
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        spinner.isHidden = true
         
         let tap = UITapGestureRecognizer(target: self, action: #selector(CameraVC.didTapCameraView))
         tap.numberOfTapsRequired = 1
@@ -71,11 +82,21 @@ class CameraVC: UIViewController {
     }
     
     @objc func didTapCameraView() {
+        self.cameraView.isUserInteractionEnabled = false
+        self.spinner.isHidden = false
+        self.spinner.startAnimating()
+        
         let settings = AVCapturePhotoSettings()
         let previewPixelType = settings.availablePreviewPhotoPixelFormatTypes.first! //first é a foto principal da camera. Podia ser livephotos ou HDR
         let previewFormat = [kCVPixelBufferPixelFormatTypeKey as String: previewPixelType, kCVPixelBufferWidthKey as String: 160, kCVPixelBufferHeightKey as String: 160]
         
         settings.previewPhotoFormat = previewFormat
+        
+        if flashControlState == .off {
+            settings.flashMode = .off
+        } else {
+            settings.flashMode = .on
+        }
         
         cameraOutput.capturePhoto(with: settings, delegate: self)
     }
@@ -85,16 +106,41 @@ class CameraVC: UIViewController {
         
         for classification in results {
             if classification.confidence < 0.5 {
-                self.identificationLbl.text = "I'm not sure what this is. please try again."
+                let unknownObjectMessage = "Não tenho certeza o que é isso. Tente novamente."
+                self.identificationLbl.text = unknownObjectMessage
+                self.synthesizeSpeech(fromString: unknownObjectMessage)
                 self.confidenceLbl.text = ""
                 break
             } else {
-                self.identificationLbl.text = classification.identifier
-                self.confidenceLbl.text = "CONFIDENCE: \(Int(classification.confidence * 100))%"
+                let identification = classification.identifier
+                let confidence = Int(classification.confidence * 100)
+                self.identificationLbl.text = identification
+                self.confidenceLbl.text = "CONFIDENCE: \(confidence)%"
+                let completeSentence = "Isso parece com \(identification) e eu tenho \(confidence) porcento de certeza."
+                synthesizeSpeech(fromString: completeSentence)
                 break
             }
         }
     }
+    
+    func synthesizeSpeech(fromString string: String) {
+        let speechUtterance = AVSpeechUtterance(string: string)
+        speechSynthesizer.speak(speechUtterance)
+    }
+    
+    
+    @IBAction func flashBtnWasPressed(_ sender: Any) {
+        switch flashControlState {
+        case .off:
+            flashBtn.setTitle("FLASH ON", for: .normal)
+            flashControlState = .on
+        case .on:
+            flashBtn.setTitle("FLASH OFF", for: .normal)
+            flashControlState = .off
+            
+        }
+    }
+    
 }
 
 extension CameraVC: AVCapturePhotoCaptureDelegate {
@@ -119,4 +165,11 @@ extension CameraVC: AVCapturePhotoCaptureDelegate {
     }
 }
 
+extension CameraVC: AVSpeechSynthesizerDelegate {
+    func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didFinish utterance: AVSpeechUtterance) {
+        self.cameraView.isUserInteractionEnabled = true
+        self.spinner.isHidden = true
+        self.spinner.stopAnimating()
+    }
+}
 

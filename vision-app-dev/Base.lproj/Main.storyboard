@@ -20,7 +20,7 @@
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="OXG-lg-wsK">
                                 <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
-                                <color key="backgroundColor" red="0.56078431370000004" green="0.81176470590000005" blue="0.30588235289999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="QEs-MG-rWD" customClass="RoundedShadowView" customModule="vision_app_dev" customModuleProvider="target">
                                 <rect key="frame" x="20" y="50" width="335" height="60"/>
@@ -70,7 +70,14 @@
                                 <state key="normal" title="FLASH OFF">
                                     <color key="titleColor" red="0.84705882352941175" green="0.27843137254901962" blue="0.11764705882352941" alpha="1" colorSpace="calibratedRGB"/>
                                 </state>
+                                <connections>
+                                    <action selector="flashBtnWasPressed:" destination="BYZ-38-t0r" eventType="touchUpInside" id="HRX-gi-EAx"/>
+                                </connections>
                             </button>
+                            <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="C77-My-B4g">
+                                <rect key="frame" x="307" y="573" width="20" height="20"/>
+                                <color key="color" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            </activityIndicatorView>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
@@ -78,8 +85,10 @@
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="hYw-YE-Ctb" secondAttribute="trailing" constant="20" id="7Mb-qy-vE0"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="OXG-lg-wsK" secondAttribute="bottom" id="7g6-SK-LKR"/>
                             <constraint firstItem="OXG-lg-wsK" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="B6H-8T-cST"/>
+                            <constraint firstItem="C77-My-B4g" firstAttribute="centerY" secondItem="hYw-YE-Ctb" secondAttribute="centerY" id="PGW-RN-56Y"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="top" secondItem="OXG-lg-wsK" secondAttribute="top" constant="20" id="Pgp-fN-tmR"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="h15-24-sqe" secondAttribute="bottom" constant="20" id="Qzb-63-8UM"/>
+                            <constraint firstItem="C77-My-B4g" firstAttribute="centerX" secondItem="hYw-YE-Ctb" secondAttribute="centerX" id="V99-c0-bpZ"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="QEs-MG-rWD" secondAttribute="trailing" constant="20" id="aK7-08-7k7"/>
                             <constraint firstItem="QEs-MG-rWD" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="20" id="by6-jl-Hgo"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="hYw-YE-Ctb" secondAttribute="bottom" constant="20" id="e1w-pi-qkm"/>
@@ -95,6 +104,7 @@
                         <outlet property="flashBtn" destination="h15-24-sqe" id="mPt-t8-L2E"/>
                         <outlet property="identificationLbl" destination="p6l-Bk-Dcv" id="iv6-ta-dqb"/>
                         <outlet property="roudedLblView" destination="QEs-MG-rWD" id="Wn4-fn-jQV"/>
+                        <outlet property="spinner" destination="C77-My-B4g" id="PCu-lR-rMC"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
